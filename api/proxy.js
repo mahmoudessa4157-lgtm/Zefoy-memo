@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "Missing URL" });
 
-  const API_KEY = "YOUR_API_KEY_HERE"; // ⚠️ حط المفتاح هنا
+  const API_KEY = "cf303b84c71f2c87aab20c3720acee62"; // ⚠️ حط المفتاح هنا
   const API_URL = "https://peakerr.com/api/v2";
 
   try {
