@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zefoy Clone</title>
+<style>
+  :root { --bg: #121212; --panel: #1e1e1e; --text: #fff; --cyan: #25F4EE; --red: #FE2C55; --border: #333; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  .container { width: 100%; max-width: 500px; padding: 20px; }
+  .header { text-align: center; margin-bottom: 30px; }
+  .header h1 { font-size: 32px; letter-spacing: 2px; text-shadow: 2px 2px var(--red), -2px -2px var(--cyan); }
+  .input-section { background: var(--panel); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
+  .input-group { margin-bottom: 15px; }
+  .input-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+  .input-group input { width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); color: white; border-radius: 5px; outline: none; }
+  .input-group input:focus { border-color: var(--cyan); }
+  .btn { width: 100%; padding: 15px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; background: var(--red); color: white; transition: 0.2s; }
+  .btn:hover { background: #d92646; }
+  .btn:disabled { background: #555; cursor: not-allowed; }
+  .logs { background: #000; border: 1px solid var(--border); border-radius: 5px; padding: 10px; height: 150px; overflow-y: auto; font-size: 12px; color: #0f0; font-family: monospace; margin-top: 20px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Zefoy</h1>
+    <p style="color:#888; font-size:12px; margin-top:5px;">Free TikTok Views</p>
+  </div>
+  
+  <div class="input-section">
+    <div class="input-group">
+      <label>TikTok Video URL</label>
+      <input type="text" id="tiktokUrl" placeholder="https://www.tiktok.com/@user/video/1234567890">
+    </div>
+    <button class="btn" id="startBtn" onclick="startBoost()">Get Free Views</button>
+    <div class="logs" id="logs"></div>
+  </div>
+</div>
+
+<script>
+  async function startBoost() {
+    const url = document.getElementById('tiktokUrl').value.trim();
+    const btn = document.getElementById('startBtn');
+    const logs = document.getElementById('logs');
+    
+    if (!url) { alert("Please enter a valid TikTok URL!"); return; }
+    
+    btn.disabled = true;
+    btn.innerText = "Processing...";
+    logs.style.display = 'block';
+    logs.innerHTML = "> Connecting to Server...\n";
+    
+    try {
+      // بنبعت الطلب لملف الـ API بتاعنا في Vercel بدل Peakerr مباشرة
+      const res = await fetch('/api/proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      });
+      
+      const data = await res.json();
+      
+      if (data.error) {
+        logs.innerHTML += `> [ERROR] ${data.error}\n`;
+        resetBtn();
+      } else if (data.order) {
+        logs.innerHTML += `> [SUCCESS] Order ID: ${data.order}\n`;
+        logs.innerHTML += `> Sending 1000 views to video...\n`;
+        btn.innerText = "Views Sent ✅";
+        btn.style.background = "#0f0";
+        btn.style.color = "#000";
+      } else {
+        logs.innerHTML += `> [ERROR] Unknown Response\n`;
+        resetBtn();
+      }
+    } catch (e) {
+      logs.innerHTML += `> [CRITICAL] Network Error: ${e.message}\n`;
+      resetBtn();
+    }
+  }
+
+  function resetBtn() {
+    const btn = document.getElementById('startBtn');
+    btn.disabled = false;
+    btn.innerText = "Try Again";
+    btn.style.background = "var(--red)";
+    btn.style.color = "white";
+  }
+</script>
+</body>
+  </html>
